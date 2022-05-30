@@ -5,7 +5,10 @@ import sys
 
 
 def do_add(env, args):
-    """Add two values."""
+    """Add two values.
+
+    ["add" A B] => A + B
+    """
     assert len(args) == 2
     left = do(env, args[0])
     right = do(env, args[1])
@@ -13,25 +16,37 @@ def do_add(env, args):
 
 
 def do_comment(env, args):
-    """Ignore instructions."""
+    """Ignore instructions.
+
+    ["comment" "text"] => None
+    """
     return None
 
 
 def do_get(env, args):
-    """Get the value of a variable."""
+    """Get the value of a variable.
+
+    ["get" name] => env{name}
+    """
     assert len(args) == 1
     assert args[0] in env, f"Unknown variable {args[0]}"
     return env[args[0]]
 
 
 def do_gt(env, args):
-    """Strictly greater than."""
+    """Strictly greater than.
+
+    ["gt" A B] => A > B
+    """
     assert len(args) == 2
     return do(env, args[0]) > do(env, args[1])
 
 
 def do_if(env, args):
-    """Make a choice."""
+    """Make a choice: only one sub-expression is evaluated.
+
+    ["if" C A B] => A if C else B
+    """
     assert len(args) == 3
     cond = do(env, args[0])
     choice = args[1] if cond else args[2]
@@ -39,25 +54,38 @@ def do_if(env, args):
 
 
 def do_leq(env, args):
-    """Less than or equal."""
+    """Less than or equal.
+
+    ["leq" A B] => A <= B
+    """
     assert len(args) == 2
     return do(env, args[0]) <= do(env, args[1])
 
 
 def do_neg(env, args):
-    """Arithmetic negation."""
+    """Arithmetic negation.
+
+    ["neq" A] => -A
+    """
     assert len(args) == 1
     return -do(env, args[0])
 
 
 def do_not(env, args):
-    """Logical negation."""
+    """Logical negation.
+
+    ["not" A] => not A
+    """
     assert len(args) == 1
     return not do(env, args[0])
 
 
 def do_or(env, args):
-    """Logical or."""
+    """Logical or.
+    The second sub-expression is only evaluated if the first is false.
+
+    ["or" A B] => A or B
+    """
     assert len(args) == 2
     if temp := do(env, args[0]):
         return temp
@@ -65,14 +93,20 @@ def do_or(env, args):
 
 
 def do_print(env, args):
-    """Print values."""
+    """Print values.
+
+    ["print" ...values...] => None # print each value
+    """
     args = [do(env, a) for a in args]
     print(*args)
     return None
 
 
 def do_repeat(env, args):
-    """Repeat instructions some number of times."""
+    """Repeat instructions some number of times.
+
+    ["repeat" N expr] => expr # last one of N
+    """
     assert len(args) == 2
     count = do(env, args[0])
     for i in range(count):
@@ -81,14 +115,20 @@ def do_repeat(env, args):
 
 
 def do_seq(env, args):
-    """Do a sequence of operations."""
+    """Do a sequence of operations.
+
+    ["seq" A B...] => last expr # execute in order
+    """
     for a in args:
         result = do(env, a)
     return result
 
 
 def do_set(env, args):
-    """Assign to a variable."""
+    """Assign to a variable.
+
+    ["seq" name expr] => expr # and env{name} = expr
+    """
     assert len(args) == 2
     assert isinstance(args[0], str)
     value = do(env, args[1])

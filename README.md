@@ -78,9 +78,26 @@ It's really that simple.
     `["array", "new", 10]` creates an array of 10 elements,
     while other instructions get and set particular array elements by index.
 
-2.  The `"repeat"` instruction runs some other instruction(s) several times,
+2.  Add a `while` loop to TLL.
+
+3.  The `"repeat"` instruction runs some other instruction(s) several times,
     but there is no way to access the loop counter inside those instructions.
     Modify `"repeat"` so that programs can do this.
+    (Hint: allow people to create a new variable to hold the loop counter's current value.)
+
+4.  Explain how the table `OPERATIONS` is constructed.
+
+5.  Several of the instruction functions started with `assert` statements,
+    which means that users get a stack trace of TLL itself
+    when there's a bug in their program.
+    1.  Define a new exception class called `TLLException`.
+    2.  Write a utility function called `check`
+        that raises a `TLLException` with a useful error message
+        when there's a problem.
+    3.  Add a `catch` statement to handle these errors.
+
+6.  The docstring in each action function explain what it does.
+    Can you rewrite those for `do_repeat` and `do_seq` to be clearer or more consistent?
 
 ## Separating Compilation and Execution
 
