@@ -99,6 +99,75 @@ It's really that simple.
 6.  The docstring in each action function explain what it does.
     Can you rewrite those for `do_repeat` and `do_seq` to be clearer or more consistent?
 
+## Defining and Calling Functions
+
+TLL can do a lot:
+in fact,
+since it has variables, loops, and conditionals,
+it can do everything that *any* programming language can do.
+However,
+writing TLL programs will be painful
+because there's no way for users to define new operations within the language itself.
+Doing this in `tllfunc.py` makes TLL less than 60 lines longer:
+
+1.  Instead of using a single dictionary to store an environment
+    we use a list of dictionaries.
+    The first dictionary is the global environment;
+    the others store variables belonging to active function calls.
+
+2.  When we get or set a variable,
+    we check the most recent environment first
+    (i.e., the one that's last in the list);
+    if the variable isn't there we look in the global environment.
+    We *don't* look at the environments in between.
+
+3.  A function definition looks like:
+
+        ["def", "same", ["num"], ["get", "num"]]
+
+    It has a name, a (possibly empty) list of parameter names,
+    and a single instruction as a body
+    (which will usually be a `"seq"` instruction).
+
+4.  Functions are stored in the environment like any other value.
+    The value stored for the function defined above would be:
+
+        ["func", ["num"], ["get", "num"]]
+
+    We don't need to store the name: that's recorded by the environment,
+    just like it is for any other variable.
+
+5.  A function call looks like:
+
+        ["call", "same", 3]
+
+    The values passed to the functions are normally expressions rather than constants,
+    and are *not* put in a sub-list.
+    The implementation:
+    1.  Evaluates all of these expressions.
+    2.  Looks up the function.
+    3.  Creates a new environment whose keys are the parameters' names
+        and whose values are the expressions' values.
+    4.  Calls `do` to run the function's action and captures the result.
+    5.  Discards environment created two steps previously.
+    6.  Returns the function's result.
+
+### Exercises
+
+1.  Add a `--debug` command-line flag to `tllfunc.py`.
+    When enabled, it makes TLL print a messages showing each function call and its result.
+
+2.  Add a `"return"` instruction to TLL that ends a function call immediately
+    and returns a single value.
+
+3.  If you implemented arrays earlier,
+    add variable-length parameter lists to TLL.
+
+4.  `tllfunc.py` allows users to define functions inside functions.
+    What variables can the inner function access when you do this?
+    What variables *should* it be able to access?
+    What would you have to do to enable this?
+
 ## Separating Compilation and Execution
 
 You might feel there's still magic in TLL,
