@@ -117,6 +117,20 @@ def do_repeat(env, args):
         result = do(env, args[1])
     return result
 
+# new repeat with counter
+def do_repeat_count(env, args):
+    """Repeat instructions some number of times.
+    but now counter is accessible
+    ["repeat" N n_name expr] => expr # last one of N
+
+    ## but what if want to modify it -> not a good idea just question
+    """
+    assert len(args) == 3
+    count = do(env, args[0])
+    for i in range(count):
+        do_set(env, args[1], i)
+        result = do(env, args[2])
+    return result
 
 def do_seq(env, args):
     """Do a sequence of operations.
@@ -155,14 +169,15 @@ def do_array(env,args):
     num_ele = args[1]
     assert isinstance(args[0],str)
     assert int(num_ele) >= 0
-    env[name_arr]=[0]*num_ele
+    env[name_arr]=[0]*num_ele # initialize as 0?
 
 def do_set_array(env,args):
     """
     Set particular element in array
     name of array, index and new value
-    ["set_array","new", 1,"new value"]
+    ["set_array" name indx new_value]
     """
+    assert len(args) == 3
     assert args[0] in env.keys()
     assert isinstance(args[1],int)
     assert args[1] >= 0
@@ -176,7 +191,7 @@ def do_get_array(env,args):
     """
     get particular element in array
     name of array, index
-    ["get_array","new",0]
+    ["get_array" name 0]
     """
     assert args[0] in env.keys()
     assert isinstance(args[1],int)
@@ -184,6 +199,22 @@ def do_get_array(env,args):
     assert len(env[args[0]]) >= args[1]-1
     return env[args[0]][args[1]]
 
+"""
+Q2: while
+"""
+def do_while(env,args):
+    """
+    while loop (if satisfy condition then end)
+    ["while" C expr]
+
+    # Any problem using recursion?
+    """
+    assert len(args) == 2
+    
+    if not args[0]:
+        do(env, args[1])
+    if not args[0]:    
+        do_while(env, args)
 
 
 # Lookup table of operations.
@@ -192,7 +223,16 @@ OPERATIONS = {
     for (name, func) in globals().items()
     if name.startswith("do_")
 }
+"""
+Q4: 
+- Operations table is a dictionary of functions here (that start with `do_`)
+- Local scope = within a function & class; Global includes name, main, doc etc
+- The function is stored in the dictionary as items, key being the name (stripped of `do_`)
+- This allows the do function to look up which function and pass it to that
 
+# Same function name - from same or different package?
+# Change function in the middle - would need to update
+"""
 
 def do(env, instruction):
     """Run the given instruction in the given environments."""
@@ -207,3 +247,22 @@ if __name__ == "__main__":
     program = json.load(sys.stdin)
     result = do({}, program)
     print("=>", result)
+
+"""
+Q5. Exceptions
+
+# Should this be child class of Exception?
+# better to construct one class than multiple for different kinds of errors?
+# Also why not just annotate the assertions - for better info?
+"""
+class TLLExceptions(Exception):
+
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
+
+    def check(script_path):
+        try:
+            program = json.load(sys.stdin)
+            result = do({},program)
+        except:
+            raise TLLExceptions("Error in code")
