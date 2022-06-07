@@ -154,6 +154,10 @@ def do(env, instruction):
 
 
 if __name__ == "__main__":
-    program = json.load(sys.stdin)
+    if len(sys.argv) == 2:
+        with open(sys.argv[1], "r") as reader:
+            program = json.load(reader)
+    else:
+        program = json.load(sys.stdin)
     result = do({}, program)
     print("=>", result)
