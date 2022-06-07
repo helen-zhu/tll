@@ -1,0 +1,12 @@
+4. Explain how the table OPERATIONS is constructed
+
+# Lookup table of operations.
+OPERATIONS = {
+    name.replace("do_", ""): func
+    for (name, func) in globals().items()
+    if name.startswith("do_")
+}
+
+1. replaces the "do_" in the name of the function
+2. sets the name and function in the global environment if the name of the function
+starts with "do_"

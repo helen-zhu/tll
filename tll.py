@@ -127,7 +127,9 @@ def do_seq(env, args):
 def do_set(env, args):
     """Assign to a variable.
 
-    ["seq" name expr] => expr # and env{name} = expr
+    ["set" name expr] => expr # and env{name} = expr
+
+    *** Why does this return value?
     """
     assert len(args) == 2
     assert isinstance(args[0], str)
