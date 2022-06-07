@@ -11,7 +11,7 @@ def do_add(env, args):
     """
     assert len(args) == 2
     left = do(env, args[0])
-    right = do(env, args[1])
+    right = do(env, args[1]) # do to get variable
     return left + right
 
 
@@ -65,7 +65,7 @@ def do_leq(env, args):
 def do_neg(env, args):
     """Arithmetic negation.
 
-    ["neq" A] => -A
+    ["neg" A] => -A
     """
     assert len(args) == 1
     return -do(env, args[0])
@@ -77,6 +77,7 @@ def do_not(env, args):
     ["not" A] => not A
     """
     assert len(args) == 1
+    # should new language check args type (bool)
     return not do(env, args[0])
 
 
@@ -87,6 +88,8 @@ def do_or(env, args):
     ["or" A B] => A or B
     """
     assert len(args) == 2
+    # @here: case where temp := doesn't assign?
+    # If temp is False (args[0]) then return args[1] 
     if temp := do(env, args[0]):
         return temp
     return do(env, args[1])
@@ -98,6 +101,7 @@ def do_print(env, args):
     ["print" ...values...] => None # print each value
     """
     args = [do(env, a) for a in args]
+    # * unpacks the list
     print(*args)
     return None
 
@@ -134,6 +138,52 @@ def do_set(env, args):
     value = do(env, args[1])
     env[args[0]] = value
     return value
+
+
+def do_array(env,args):
+    """ 
+    Make a fixed length array 
+
+
+    ["array", "new", 10]
+    # How do we really initialize something
+    # what if not fixed - just change env variable? @here
+    # what if variable have the same name - same key
+    # How can programmers catch all exceptions there is (also repeating tests?)
+    """
+    name_arr = args[0]
+    num_ele = args[1]
+    assert isinstance(args[0],str)
+    assert int(num_ele) >= 0
+    env[name_arr]=[0]*num_ele
+
+def do_set_array(env,args):
+    """
+    Set particular element in array
+    name of array, index and new value
+    ["set_array","new", 1,"new value"]
+    """
+    assert args[0] in env.keys()
+    assert isinstance(args[1],int)
+    assert args[1] >= 0
+    assert len(env[args[0]]) >= args[1]-1
+    original_lst = env[args[0]]
+    new_lst = env[args[0]]
+    new_lst[args[1]] = args[2]
+    env[args[0]] = new_lst
+
+def do_get_array(env,args):
+    """
+    get particular element in array
+    name of array, index
+    ["get_array","new",0]
+    """
+    assert args[0] in env.keys()
+    assert isinstance(args[1],int)
+    assert args[1] >= 0
+    assert len(env[args[0]]) >= args[1]-1
+    return env[args[0]][args[1]]
+
 
 
 # Lookup table of operations.
