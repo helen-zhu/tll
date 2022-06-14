@@ -1,0 +1,6 @@
+[
+    "seq",
+    ["comment", "Testing new repeat"],
+    ["repeat", 4, ["print", "hi"]],
+    ["print", "count: ", ["get", "count"]]
+]

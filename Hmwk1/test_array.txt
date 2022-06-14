@@ -1,0 +1,8 @@
+[
+    "seq",
+    ["comment", "Creating an array"],
+    ["set", "a", ["array", "new", 10]],
+    ["print", "initial", ["retrieve_element", "a", 0]],
+    ["set_element", "a", 0, 1],
+    ["print", "now", ["retrieve_element", "a", 0]]
+]

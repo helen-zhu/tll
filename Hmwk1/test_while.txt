@@ -1,0 +1,12 @@
+[
+    "seq",
+    ["comment", "Testing while"],
+    ["set", "a", 1],
+    ["print", "initial", ["get", "a"]],
+    [
+        "while",
+        ["leq", ["get", "a"], 10],
+        ["set", "a", ["add", ["get", "a"], 1]]
+    ],
+    ["print", "now", ["get", "a"]]
+]
